@@ -1,0 +1,13 @@
+
+1 - Para ativar o push sem login 
+
+		https://help.github.com/articles/generating-ssh-keys/
+
+
+2 - Para mostrar o branch no qual vc esta trabalhando adcione o texto abaixo no arquivo ".bashrc" de seu usuario:
+		parse_git_branch() {
+		  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+		}
+		PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w\$(parse_git_branch) $ "
+
+
