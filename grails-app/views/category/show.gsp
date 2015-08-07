@@ -23,6 +23,26 @@
 			</g:if>
 			<ol class="property-list category">
 			
+				<g:if test="${categoryInstance?.nome}">
+				<li class="fieldcontain">
+					<span id="nome-label" class="property-label"><g:message code="category.nome.label" default="Nome" /></span>
+					
+						<span class="property-value" aria-labelledby="nome-label"><g:fieldValue bean="${categoryInstance}" field="nome"/></span>
+					
+				</li>
+				</g:if>
+			
+				<g:if test="${categoryInstance?.task}">
+				<li class="fieldcontain">
+					<span id="task-label" class="property-label"><g:message code="category.task.label" default="Task" /></span>
+					
+						<g:each in="${categoryInstance.task}" var="t">
+						<span class="property-value" aria-labelledby="task-label"><g:link controller="task" action="show" id="${t.id}">${t?.encodeAsHTML()}</g:link></span>
+						</g:each>
+					
+				</li>
+				</g:if>
+			
 			</ol>
 			<g:form url="[resource:categoryInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">

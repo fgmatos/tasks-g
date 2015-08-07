@@ -24,9 +24,9 @@
 			<thead>
 					<tr>
 					
-						<g:sortableColumn property="categoria" title="${message(code: 'task.categoria.label', default: 'Categoria')}" />
+						<th><g:message code="task.categoria.label" default="Categoria" /></th>
 					
-						<g:sortableColumn property="created_at" title="${message(code: 'task.created_at.label', default: 'Createdat')}" />
+						<g:sortableColumn property="completada" title="${message(code: 'task.completada.label', default: 'Completada')}" />
 					
 						<g:sortableColumn property="data" title="${message(code: 'task.data.label', default: 'Data')}" />
 					
@@ -40,7 +40,7 @@
 					
 						<td><g:link action="show" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "categoria")}</g:link></td>
 					
-						<td><g:formatDate date="${taskInstance.created_at}" /></td>
+						<td><g:formatBoolean boolean="${taskInstance.completada}" /></td>
 					
 						<td><g:formatDate date="${taskInstance.data}" /></td>
 					

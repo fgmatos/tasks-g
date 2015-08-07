@@ -7,16 +7,16 @@
 		<g:message code="task.categoria.label" default="Categoria" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="categoria" required="" value="${taskInstance?.categoria}"/>
+	<g:select id="categoria" name="categoria.id" from="${com.app.Category.list()}" optionKey="id" required="" value="${taskInstance?.categoria?.id}" class="many-to-one"/>
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'created_at', 'error')} required">
-	<label for="created_at">
-		<g:message code="task.created_at.label" default="Createdat" />
-		<span class="required-indicator">*</span>
+<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'completada', 'error')} ">
+	<label for="completada">
+		<g:message code="task.completada.label" default="Completada" />
+		
 	</label>
-	<g:datePicker name="created_at" precision="day"  value="${taskInstance?.created_at}"  />
+	<g:checkBox name="completada" value="${taskInstance?.completada}" />
 
 </div>
 

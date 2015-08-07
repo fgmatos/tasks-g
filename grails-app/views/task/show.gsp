@@ -27,16 +27,16 @@
 				<li class="fieldcontain">
 					<span id="categoria-label" class="property-label"><g:message code="task.categoria.label" default="Categoria" /></span>
 					
-						<span class="property-value" aria-labelledby="categoria-label"><g:fieldValue bean="${taskInstance}" field="categoria"/></span>
+						<span class="property-value" aria-labelledby="categoria-label"><g:link controller="category" action="show" id="${taskInstance?.categoria?.id}">${taskInstance?.categoria?.encodeAsHTML()}</g:link></span>
 					
 				</li>
 				</g:if>
 			
-				<g:if test="${taskInstance?.created_at}">
+				<g:if test="${taskInstance?.completada}">
 				<li class="fieldcontain">
-					<span id="created_at-label" class="property-label"><g:message code="task.created_at.label" default="Createdat" /></span>
+					<span id="completada-label" class="property-label"><g:message code="task.completada.label" default="Completada" /></span>
 					
-						<span class="property-value" aria-labelledby="created_at-label"><g:formatDate date="${taskInstance?.created_at}" /></span>
+						<span class="property-value" aria-labelledby="completada-label"><g:formatBoolean boolean="${taskInstance?.completada}" /></span>
 					
 				</li>
 				</g:if>
