@@ -1,11 +1,16 @@
 package com.app
 
 class Task {
-	String nome
+	Boolean completada = false
+	Category categoria
 	Date data
-	String categoria
-	Date created_at
+	String nome
 
+	//static belongsTo = [categoria: Category]
+
+	static mapping = {
+    	categoria lazy:false
+	}
     static constraints = {
 		//categoria(inList: ["Pessoal", "Profissional"])
 		//sort data: "desc"
