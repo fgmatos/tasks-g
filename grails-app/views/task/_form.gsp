@@ -7,7 +7,7 @@
 		<g:message code="task.categoria.label" default="Categoria" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="categoria" name="categoria.id" from="${com.app.Category.list()}" optionKey="id" required="" value="${taskInstance?.categoria?.id}" class="many-to-one"/>
+	<g:select id="categoria" name="categoria.id" from="${com.app.Category.list()}" optionKey="id" required="" optionValue="nome" value="${taskInstance?.categoria?.id}"  class="many-to-one"/>
 
 </div>
 

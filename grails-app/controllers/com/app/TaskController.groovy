@@ -92,6 +92,10 @@ class TaskController {
         }
     }
 
+    def countTasks() {
+        respond Task.count()
+    }
+
     protected void notFound() {
         request.withFormat {
             form multipartForm {
