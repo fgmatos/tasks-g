@@ -21,7 +21,11 @@
 			<!-- <a href="http://grails.org"><asset:image src="grails_logo.png" alt="Grails"/></a> -->
 			<span>Lista de Tarefas</span>
 		</div>
-		<g:layoutBody/>
+
+		<main id="taskPage">
+			<g:layoutBody/>
+		</main>
+		
 		<!-- <div class="footer" role="contentinfo"></div> -->
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
 	</body>
