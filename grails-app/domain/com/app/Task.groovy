@@ -1,7 +1,7 @@
 package com.app
 
 class Task {
-	Boolean completada = false
+	String complete = false
 	Category categoria
 	Date data
 	String nome
