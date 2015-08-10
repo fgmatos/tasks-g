@@ -1,5 +1,6 @@
 
 <%@ page import="com.app.Task" %>
+<%@ page import="com.app.Category" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -50,6 +51,9 @@
 			<form id="taskForm">
 				<!--<input type="hidden" name="id"/>-->
 				<div>
+					<input type="hidden" name="id" />
+					<input type="hidden" name="complete">
+
 					<label>Tarefa<span class="required">*</span></label> 
 					<input type="text" required="required" name="nome" id="nome" class="large" placeholder="Estudar e programar" maxlength="200">
 				</div>
@@ -72,10 +76,11 @@
 
 				</div>
 	                        <!-- <input type="hidden" name="id"> -->
-				<nav>
+				<nav id="nav-task">
 					<!-- <g:remoteLink action="save" update="result">Salvar Tarefa</g:remoteLink> -->
 					<a href="#" id="saveTask">Salvar tarefa</a>	
 					<a href="#" id="clearTask">Limpar tarefas</a>
+					<a href="#" id="hideTask">Ocultar</a>
 				</nav>
 			</form>
 
@@ -97,7 +102,7 @@
 
 						<th><g:message code="task.categoria.label" default="Categoria" /></th>
 					
-						<!-- <g:sortableColumn property="completada" title="${message(code: 'task.completada.label', default: 'Completada')}" />  -->
+						<!-- <g:sortableColumn property="complete" title="${message(code: 'task.complete.label', default: 'complete')}" />  -->
 
 						<th><g:message code="default.taskpage.actions.label"  /></th>
 						
@@ -105,7 +110,7 @@
 					</tr>
 				</thead>
 				<tbody>
-				<g:each in="${taskInstanceList}" status="i" var="taskInstance">
+				<!-- <g:each in="${taskInstanceList}" status="i" var="taskInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 						
 						<td>${fieldValue(bean: taskInstance, field: "nome")}</td>
@@ -118,53 +123,30 @@
 						</td>
 
 						<td><g:link action="show" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "categoria.nome")}</g:link></td>
-					
-						<!-- <td><g:formatBoolean boolean="${taskInstance.completada}" /></td> -->
 
-						<!-- <td>
-							<div class="nav buttons">
-								<li>
-									<g:link class="editRow edit btn btn-primary" url="#">
-										<g:message code="default.button.edit.label"/>
-									</g:link>
-								</li>
-
-								<li>
-									<g:link class="completeRow create btn btn-primary" url="#">
-										<g:message code="default.button.complete.label"/>
-									</g:link>
-								</li>
-
-								<li>
-									<g:link class="deleteRow delete btn btn-primary" url="#">
-										<g:message code="default.button.delete.label"/>
-									</g:link>
-								</li>
-							</div>
-						</td> -->
-					
 						<td>
-
-							<g:link class="editRow edit" url="#">
-								<g:message code="default.button.edit.label"/>
-							</g:link>
-						
-							<g:link class="completeRow create" url="#">
-								<g:message code="default.button.complete.label"/>
-							</g:link>
+							<nav>
+								<g:link class="editRow " url="#${taskInstance.id}">
+									<g:message code="default.button.edit.label"/>
+								</g:link>
 							
-							<!-- <g:remoteLink action="delete" id="${taskInstance.id}">
-								<g:message code="default.button.delete.label"/>
-							</g:remoteLink> -->
+								<g:link class="completeRow " url="#${taskInstance.id}">
+									<g:message code="default.button.complete.label"/>
+								</g:link>
+								
+								<!-- <g:remoteLink action="delete" id="${taskInstance.id}">
+									<g:message code="default.button.delete.label"/>
+								</g:remoteLink> -->
 
-							<g:link class="deleteRow delete" url="#${taskInstance.id}">
-								<g:message code="default.button.delete.label"/>
-							</g:link>
+								<!-- <g:link class="deleteRow " url="#${taskInstance.id}">
+									<g:message code="default.button.delete.label"/>
+								</g:link>
+							</nav>
 						
 						</td>
 					
 					</tr>
-				</g:each>
+				</g:each> -->
 				</tbody>
 			</table>
 
@@ -178,29 +160,47 @@
 
 			<div class="pagination">
 				<g:paginate total="${taskInstanceCount ?: 0}" />
-				<span id="taskCount">0</span>
+				
+				<footer>
+					Você tem <span id="taskCount">0</span> tarefa(s) pendente(s)
+				</footer>
+				
 			</div>
 		</div>
 
 		<script>
-		$(document).ready(function() {
+			$(document).ready(function() {		
+				// Descricao da funcao: (ex.)
+				// 		tasksController.init( element, dataEngine, function loadTasks )
+				//			params: 
+				//				Element, => Informa o elemento HTML utilizado pelo TASKSCONTROLLER 
+				//				dataEngine => Informa qual lib de armazenamento de dados será utilizada. (disponível 'indexeddb' e 'webstorage'. Valor default é "webstorage")
+				
+				tasksController.init($('#taskPage'), "ajaxDB", function() {
+					// tasksController.loadTasks();
+				});	
 
-			// #6 - Implementada engine IndexedDB para salvar os dados. Existe a opção de vc escolher uma das API's ao charmar o
-			//		tasksController.init, ou se não informado, será utilizada a API webstorage por padrão por ser suportada
-			// 		por mais browsers que as demais.
-		
-			// Descricao da funcao: (ex.)
-			// 		tasksController.init( element, dataEngine, function loadTasks )
-			//			params: 
-			//				Element, => Informa o elemento HTML utilizado pelo TASKSCONTROLLER 
-			//				dataEngine => Informa qual lib de armazenamento de dados será utilizada. (disponível 'indexeddb' e 'webstorage'. Valor default é "webstorage")
-			
-			tasksController.init($('body'), "ajaxDB", function() {
-				// tasksController.loadTasks();
-			});		
-		});
+				// if (jQuery.support.ajax) {
+				//     alert("Ajax is supported!");
+				// }	
+			});
+		</script>
 
-
+<script id="taskRow" type="text/x-jQuery-tmpl">
+<tr  row-task-id="{{= id }}">>
+	<td {{if complete == true}}class="taskCompleted"{{/if}}>{{= nome}}</td>
+	<td {{if complete == true}}class="taskCompleted"{{/if}}><time datetime="{{= data}}"> {{= data}}</time></td>
+	<td {{if complete == true}}class="taskCompleted"{{/if}}>{{= categoria_nome}}</td>
+	<td>
+		<nav>
+			{{if complete != true}}
+				<a href="#{{= id}}" class="editRow" data-task-id="{{= id}}">Editar</a>
+				<a href="#{{= id}}" class="completeRow" data-task-id="{{= id}}">Completar</a>
+			{{/if}}
+			<a href="#{{= id}}" class="deleteRow" data-task-id="{{= id}}">Deletar</a>
+		</nav>
+	</td>
+</tr>
 </script>
 
 

@@ -6,21 +6,13 @@ tasksController = function() {
 	
 	var taskPage;
 	var initialised = false;
-	// variavel para escolha do tipo de armazenamento a ser utilizado
-	var dataEngine = ''; 		//	'indexeddb', 'webstorage' ou 'ajaxDB'
+	var dataEngine = 'ajaxDB'; 		//	'indexeddb', 'webstorage' ou 'ajaxDB'
 	
 	// #2 - metodo para limpar o formulario fazendo-o receber um objeto vazio.
 	function clearTaskForm() {
 		$(taskPage).find('form').fromObject({}); 
 	}
 	
-	function taskCountRow() {
-				$("#taskCount").text(storageEngine.countTasks);
-	}
-	// #3 - Destacar tarefas que passaram do deadline. Percorremos cada linha da tabela atribuindo seu valor a varial 'row'
-    //			Nesta linha (row) recolhemos a data realizando uma conversao para o tipo Date.
-    //			Por fim comparamos: se data da tarefa for igual a hoje. Adicionamos a classe 'overdue' para alertar.
-    //			se for menor que a data atual, adicionamos a classe 'warning' avisando que está pendente+
 	function tasksMakeColor() {
 		// $.each($(taskPage).find('#tblTasks tbody tr'), function(idx, row){ 
 		// 	var day = Date.parse($(row).find('[datetime]').text()); 
@@ -42,7 +34,7 @@ tasksController = function() {
 			} else {
 
 				taskPage = page;
-				dataEngine = storage;
+				// dataEngine = storage;
 
 				if (dataEngine == "indexeddb" || dataEngine == "webstorage" || dataEngine== "ajaxDB") {
 					if (dataEngine == 'indexeddb' && window.indexedDB) {
@@ -64,11 +56,13 @@ tasksController = function() {
 				}
 
 				// storage engine continua sendo a interface de acesso aos dados
-				storageEngine.init(function() {
-					storageEngine.initObjectStore('task', function() {
-						callback();
-					}, errorLogger) 
-				}, errorLogger);
+				storageEngine.init( function() { tasksController.loadTasks(); }, errorLogger );
+
+				// storageEngine.init(function() {
+				// 	storageEngine.initObjectStore('task', function() {
+				// 		callback();
+				// 	}, errorLogger) 
+				// }, errorLogger);
 				
 				$(taskPage).find('[required="required"]').prev('label').append( '<span>*</span>').children( 'span').addClass('required');
 				$(taskPage).find('tbody tr:even').addClass( 'even');
@@ -82,10 +76,16 @@ tasksController = function() {
 					$(evt.target).closest('td').siblings().andSelf().toggleClass('rowHighlight');
 				});
 
-				
+				// CLEAR TASK - limpar o form de nova tarefa
 				$(taskPage).find('#clearTask').click(function(evt) {
 					evt.preventDefault();
 					clearTaskForm(); 
+				});
+
+				// HIDE TASK - Ocultar form de nova tarefa
+				$(taskPage).find('#hideTask').click(function(evt) {
+					evt.preventDefault();
+					$(taskPage).find('#taskCreation').addClass('not');
 				});
 				
 				// DELETE TASK
@@ -103,13 +103,24 @@ tasksController = function() {
 				// COMPLETE TASK
 				$(taskPage).find('#tblTasks tbody').on('click', '.completeRow', function(evt) { 
 					console.log('call .completeRow');					
-					storageEngine.findById('task', $(evt.target).data().taskId, function(task) {
-						task.complete = true;
-						storageEngine.save('task',task,function(){
-							tasksController.loadTasks();
-							document.location.reload(true); 
-						},errorLogger);
-					},errorLogger);
+					
+					storageEngine.findById('task', evt, // $(evt.target).data().taskId, 
+						function(task) {							
+							storageEngine.complete("task", task, function(){								
+								$(evt.target).data.taskId.parents().eq(1).siblings().addClass('taskCompleted');								
+								$(evt.target).data.taskId.fadeOut(1000);								
+								$(evt.target).data.taskId.parent().find(".editRow").fadeOut(1000);								
+								tasksController.countTasks();
+							}, errorLogger);
+						}, errorLogger);
+
+					// storageEngine.findById('task', $(evt.target).data().taskId, function(task) {
+					// 	task.complete = true;
+					// 	storageEngine.save('task',task,function(){
+					// 		tasksController.loadTasks();
+					// 		document.location.reload(true); 
+					// 	},errorLogger);
+					// },errorLogger);
 				}); 
 							
 				// EDIT TASK	
@@ -125,8 +136,8 @@ tasksController = function() {
 				$(taskPage).find('#saveTask').click(function(evt) {
 					evt.preventDefault();
 					console.log("saveTask click")
-					if ($(taskPage).find('form').valid()) {
-						var task = $(taskPage).find('form').toObject();		
+					if ($(taskPage).find('#taskForm').valid()) {
+						var task = $(taskPage).find('#taskForm').toObject();		
 						storageEngine.save('task', task, function() {
 							// $(taskPage).find('#tblTasks tbody').empty();
 							// tasksController.loadTasks();
@@ -146,22 +157,35 @@ tasksController = function() {
 
 		// #5 - implementada ordenacao das tarefas. Ao pesquisar comparamos as datas ordenando pela menor
 		loadTasks : function() {
-			// storageEngine.findAll('task', function(tasks) {
-			// 	tasks.sort(function(d1,d2){
-			// 		return Date.parse(d1.requiredBy).compareTo(Date.parse(d2.requiredBy));
-			// 	});
+			storageEngine.findAll('task', function(tasks) {
+				// tasks.sort(function(d1,d2){
+				// 	return Date.parse(d1.requiredBy).compareTo(Date.parse(d2.requiredBy));
+				// });
 
-			// 	$.each(tasks, function(index, task) {
-			// 		if(!task.complete){
-			// 			task.complete = false;
-			// 		}
-			// 		$('#taskRow').tmpl(task).appendTo($(taskPage).find('#tblTasks tbody'));
-			
-			// 	});
-			// taskCountRow();
-			// tasksMakeColor();
-			
-			// }, errorLogger);
+				$.each(tasks, function(index, task) { //Percorre todos os dados da tabela
+						$('#taskRow').tmpl(task).appendTo($(taskPage).find('#tblTasks tbody'));						
+						if ((Date.today().compareTo(Date.parse(task.data))) == 1){ //Pinta a lina da dabela com a cor avermelhada se requiredBy) comparado com a data atual der um numero menor que 0 (ou seja a data da tarefa é menor que a data atual tarefa em atrazo)
+						 	$('tr[row-task-id="'+task.id+'"]').addClass('overdue');
+						// Caso falso, testa novamente se a tarefa irá vencer nos próximos 3 dias, caso verdade atribui a classe CSS "warning"
+						} else if (Date.parse(task.data).between(Date.today(), Date.today().add({ days: 3 }))){
+							$('tr[row-task-id="'+task.id+'"]').addClass('warning'); //Pinta de amarela a linha caso a data da tarefa (day) em comparação com o intrvalo da data atual e mais dois dias retornar um valor menor ou igual 0 (ou seja comparará a data da tarefa com o intervalo de data atual mais dois dias implicando que a data do Deadline da tarefa esta proximo ou é o dia)
+						}
+						//Metodo que completa umam tarefa (Questão 4)
+						if (task.complete == 'Ok'){
+							$('tr[row-task-id="'+task.id+'"]').addClass('taskCompleted');
+							$('a[data-task-id="'+task.id+'"]').first().next().hide();
+							$('a[data-task-id="'+task.id+'"]').first().hide();
+						}
+					});
+
+				tasksController.taskCountRow();
+			}, errorLogger);
+		},
+
+		taskCountRow : function() {
+			storageEngine.countTasks(function(data){
+				$('#taskCount').text(data.count);
+			}, errorLogger);
 		}
 	} 
 }();

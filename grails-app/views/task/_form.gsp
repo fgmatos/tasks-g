@@ -11,12 +11,12 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'completada', 'error')} ">
-	<label for="completada">
-		<g:message code="task.completada.label" default="Completada" />
+<div class="fieldcontain ${hasErrors(bean: taskInstance, field: 'complete', 'error')} ">
+	<label for="complete">
+		<g:message code="task.complete.label" default="complete" />
 		
 	</label>
-	<g:checkBox name="completada" value="${taskInstance?.completada}" />
+	<g:checkBox name="complete" value="${taskInstance?.complete}" />
 
 </div>
 
