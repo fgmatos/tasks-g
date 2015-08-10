@@ -12,21 +12,24 @@
 		<link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon">
 		<link rel="apple-touch-icon" href="${assetPath(src: 'apple-touch-icon.png')}">
 		<link rel="apple-touch-icon" sizes="114x114" href="${assetPath(src: 'apple-touch-icon-retina.png')}">
-  		<asset:stylesheet src="application.css"/>
-		<asset:javascript src="application.js"/>
+		<asset:stylesheet src="tasks.css"/>
+		<asset:javascript src="jquery-2.1.4.min.js"/>
+		<asset:javascript src="jquery.tmpl.min.js"/>
+		<asset:javascript src="jquery.validate.js"/>
+		<asset:javascript src="jquery-serialization.js"/>
+		<asset:javascript src="date.js"/>
+		<asset:javascript src="tasks-controller.js"/>
+		<asset:javascript src="tasks-ajaxBD.js"/>
+
 		<g:layoutHead/>
 	</head>
-	<body>
-		<div id="grailsLogo" role="banner">
-			<!-- <a href="http://grails.org"><asset:image src="grails_logo.png" alt="Grails"/></a> -->
-			<span>Lista de Tarefas</span>
-		</div>
+	<header>
+		<span>Lista de Tarefas</span>
+	</header>
 
-		<main id="taskPage">
-			<g:layoutBody/>
-		</main>
-		
-		<!-- <div class="footer" role="contentinfo"></div> -->
+	<body>
+		<g:layoutBody/>
+		<div class="footer" role="contentinfo"></div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
 	</body>
 </html>
