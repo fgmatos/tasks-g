@@ -8,7 +8,7 @@ import grails.transaction.Transactional
 @Transactional(readOnly = true)
 class TaskController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", countTasks: "GET"]
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", countTasks: "GET", complete: "PUT"]
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -97,6 +97,22 @@ class TaskController {
         def count = Task.count()
         render(contentType: "text/json"){
             [count: count]
+        }
+    }
+
+    @Transactional
+    def complete(){
+        def task
+        if(params?.id){
+            task = Task.get(params.id)
+            task.complete = "Ok"
+            task.save( flush: true, failOnError: true )
+            if (task.hasErrors()) {
+                println task.errors
+            }
+        } 
+        render (contentType: "text/json"){
+            json
         }
     }
 
