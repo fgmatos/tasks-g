@@ -36,7 +36,7 @@
 				<li class="fieldcontain">
 					<span id="complete-label" class="property-label"><g:message code="task.complete.label" default="complete" /></span>
 					
-						<span class="property-value" aria-labelledby="complete-label"><g:formatBoolean boolean="${taskInstance?.complete}" /></span>
+						<span class="property-value" aria-labelledby="complete-label"><g:fieldValue bean="${taskInstance}" field="complete" /></span>
 					
 				</li>
 				</g:if>
