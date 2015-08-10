@@ -8,7 +8,9 @@ import grails.transaction.Transactional
 @Transactional(readOnly = true)
 class TaskController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", countTasks: "GET", complete: "PUT"]
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", 
+                             countTasks: "GET", complete: "PUT", getById: "GET",
+                             list: "GET"]
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -24,25 +26,23 @@ class TaskController {
     }
 
     @Transactional
-    def save(Task taskInstance) {
-        if (taskInstance == null) {
-            notFound()
-            return
+    def save(){
+        def task
+        if (params?.id){
+            task = Task.get(params.id) 
+        } else{
+            task = new Task()
         }
-
-        if (taskInstance.hasErrors()) {
-            respond taskInstance.errors, view:'create'
-            return
-        }
-
-        taskInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'task.label', default: 'Task'), taskInstance.id])
-                redirect taskInstance
-            }
-            '*' { respond taskInstance, [status: CREATED] }
+        //def categoria = new Category()
+        //def pcategoria = params.categoria
+        def categoria = Category.get(params.categoria)
+        task.nome = params.nome
+        task.complete = params.complete
+        task.categoria = categoria
+        task.data = new Date().parse('yyyy-MM-dd', params.data)
+        task.save flsuh: true
+        render(contentType: "text/json"){
+            json
         }
     }
 
@@ -93,11 +93,18 @@ class TaskController {
     }
 
     def countTasks() {
-        //def tasks = Task.where{( completada == '' )}
-        def count = Task.count()
+        def tasks = Task.where{( upper(complete) != "OK" )}
+        def count = tasks.count()
         render(contentType: "text/json"){
             [count: count]
         }
+    }
+
+    def getById(){
+        def task = Task.get(params.id)     
+        render(contentType: "text/json") {
+             task.as_Array()
+        }         
     }
 
     @Transactional
@@ -114,6 +121,14 @@ class TaskController {
         render (contentType: "text/json"){
             json
         }
+    }
+
+    def list(String propertyName, String propertyValue){
+        def map = [:]
+        Task.list(sort: "data", order: "desc").each(){
+            map.put(it.id, it.as_Array());
+        }
+        render(contentType: "text/json"){ map }
     }
 
     protected void notFound() {
