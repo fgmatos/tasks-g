@@ -26,13 +26,17 @@ nav {
 
 nav a {
 	background: #53777a;
-	color: #fff;
+	color: #fff; !important;
 	width: 80px;
 	text-decoration: none;
 	border: 1px solid #5b5b5b;
 	font-size: 13px;
 	text-align:  center;
 	padding:5px 10px;
+}
+
+nav#nav-task a:link, nav#nav-task  a:visited, nav#nav-task  a:hover {
+	color: #fff; !important;
 }
 
 
