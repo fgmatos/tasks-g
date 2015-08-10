@@ -15,4 +15,8 @@ class Task {
 		//categoria(inList: ["Pessoal", "Profissional"])
 		//sort data: "desc"
     }
+
+    def as_Array() {
+        return [id: this.id, nome: this.nome, data: this.data.format('yyyy-MM-dd'), complete: this.complete, categoria_nome: this.categoria.nome, categoria: this.categoria.id]
+    }
 }
