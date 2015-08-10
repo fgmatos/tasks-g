@@ -1,32 +1,41 @@
 ajaxDBEngine = function() {
 	var initialized = false;
-	var initializedObjectStores = {};
-	function getStorageObject(type) {
-	    var item = localStorage.getItem(type); 
-	    var parsedItem = JSON.parse(item); 
-	    return parsedItem;	
-	}
-
 	
 	return {
 		init : function(successCallback, errorCallback) {
-			if (window.localStorage) {
+			if (jQuery.support.ajax) {
 				initialized = true;
-				console.log("ajaxDBEngine engine loaded. Using localStorage.")
+				console.log("AJAX is supported, ajaxDB engine loaded.")
+
 				successCallback(null);
+				
 			} else {
-				errorCallback('storage_api_not_supported', 'The web storage api is not supported');
+				errorCallback('ajax_api_not_supported', 'The ajax api is not supported');
 			}
 		},
-	    initObjectStore : function(type, successCallback, errorCallback) {
-	    	if (!initialized) {
-				errorCallback('storage_api_not_initialized', 'The storage engine has not been initialized');
-			} else if (!localStorage.getItem(type)) {
-	    		localStorage.setItem(type, JSON.stringify({}));
-	    	}
-	    	initializedObjectStores[type] = true;
-	    	successCallback(null);
+	  
+	    countTasks : function(successCallback, errorCallback){
+    		$.ajax({
+				method: 'GET', 
+				dataType: 'JSON', 
+				// url: window.urlPath + 'task/countTasks', 
+				url: 'task/countTasks', 
+				success: function(data){
+					successCallback(data);
+				}
+			});
 	    },
+
+	    complete : function(type, obj, successCallback, errorCallback){
+			$.ajax({
+				method: "PUT", 
+				// url: window.urlPath + "task/complete/"+obj.id
+				url: "task/complete/"+obj.id
+			}).done(function(msg){
+				successCallback(obj)
+			});	
+		},
+
 	    save: function(type, obj, successCallback, errorCallback) { 
 	        // if (!initialized) {
 	       	//    errorCallback('storage_api_not_initialized', 'The storage engine has not been initialized');
@@ -36,14 +45,14 @@ ajaxDBEngine = function() {
 	       //  }	
 	        console.log("init save")
 
-			// $.ajax({
-			// 	method:"POST",
-			// 	url:"task/save",
-			// 	data:obj
-			// }).done(function(type){
-			// 	console.log("Done save: Data "+obj+" saved.")
-			// 	successCallback(obj)
-			// })
+			$.ajax({
+				method:"POST",
+				url:"task/save",
+				data:obj
+			}).done(function(type){
+				console.log("Done save: Data "+obj+" saved.")
+				successCallback(obj)
+			})
 
 			 console.log("after save")
 
@@ -57,38 +66,49 @@ ajaxDBEngine = function() {
 	    },
 		findAll : function(type, successCallback, errorCallback) { 
 
-			// findAll:function(a,b,c){
-			// $.ajax({
-			// 	method:"get",
-			// 	dataType:"json",
-			// 	url:"task/index",
-			// 	success:function(type){
-			// 		var result=[];
-			// 		$.each(type,function(type,successCallback){
-			// 			result.push(successCallback)
-			// 		});
-			// 		successCallback(result)
-			// 	}
-			// })
 
-			if (!initialized) {
-				errorCallback('storage_api_not_initialized', 'The storage engine has not been initialized');
-			} else if (!initializedObjectStores[type]) {
-				errorCallback('store_not_initialized', 'The object store '+type+' has not been initialized');
-			}
-			var result = [];
-			var storageItem = getStorageObject(type); 
-			$.each(storageItem, function(i, v) {
-				result.push(v);
-			});
-			successCallback(result);
+		// 	findAll : function(type, successCallback, errorCallback) {
+		// 		var aTasks = [];
+		// 	$.ajax({method: 'GET', dataType: "JSON", url: window.urlPath + "task/list", 
+		// 			success: function (data) {
+		// 				var tasks = [];
+		// 				$.each(data, function(k, v){
+		// 					tasks.push(v);
+		// 				});
+		// 				successCallback(tasks);
+		// 			}
+		// 		});
+		// },
+
+			$.ajax({
+				method:"GET",
+				dataType:"json",
+				url:"task/list",
+				success:function(type){
+					var result=[];
+					$.each(type, function(type, successCallback){
+						result.push(successCallback)
+					});
+					successCallback(result)
+				}
+			})
+
+			// if (!initialized) {
+			// 	errorCallback('ajax_api_not_supported', 'The ajax api is not supported');
+			// } 
+
+			// var result = [];
+			// var storageItem = getStorageObject(type); 
+			// $.each(storageItem, function(i, v) {
+			// 	result.push(v);
+			// });
+			// successCallback(result);
 		},
+
 		delete : function(type, id, successCallback, errorCallback) { 
 		    if (!initialized) {
-		        errorCallback('storage_api_not_initialized', 'The storage engine has not been initialized');
-		    } else if (!initializedObjectStores[type]) {
-		        errorCallback('store_not_initialized', 'The object store '+type+' has not been initialized');
-		    }
+		        errorCallback('ajax_api_not_supported', 'The ajax api is not supported');
+		    } 
 
 		    $.ajax({
 				method:"delete",
@@ -111,28 +131,33 @@ ajaxDBEngine = function() {
 		},
 		findByProperty : function(type, propertyName, propertyValue, successCallback, errorCallback) {
 			if (!initialized) {
-				errorCallback('storage_api_not_initialized', 'The storage engine has not been initialized');
-			} else if (!initializedObjectStores[type]) {
-				errorCallback('store_not_initialized', 'The object store '+type+' has not been initialized');
-			}
-			var result = [];
-			var storageItem = getStorageObject(type); 
-			$.each(storageItem, function(i, v) {
-				if (v[propertyName] === propertyValue) {
-					result.push(v);
-				}
-			}); 
-			successCallback(result);
+				errorCallback('ajax_api_not_supported', 'The ajax api is not supported');
+			} 
+			// var result = [];
+			// var storageItem = getStorageObject(type); 
+			// $.each(storageItem, function(i, v) {
+			// 	if (v[propertyName] === propertyValue) {
+			// 		result.push(v);
+			// 	}
+			// }); 
+			// successCallback(result);
 		},
 		findById : function (type, id, successCallback, errorCallback)	{
 			if (!initialized) {
-				errorCallback('storage_api_not_initialized', 'The storage engine has not been initialized');
-			} else if (!initializedObjectStores[type]) {
-				errorCallback('store_not_initialized', 'The object store '+type+' has not been initialized');
-			}	
-			var storageItem = getStorageObject(type); 
-			var result = storageItem[id];
-			successCallback(result);
+				errorCallback('ajax_api_not_supported', 'The ajax api is not supported');
+			} else {
+				$.ajax({
+					method: 'GET', 
+					dataType: 'JSON', 
+					// url: 'task/getById/'+id, 
+					url: 'task/getById/'+($(id.target).attr("href")).replace("#",""),
+					success: function(task){
+						console.log(task);
+						successCallback(task);
+					}
+				});
+
+			}
 		}
 
 	}
