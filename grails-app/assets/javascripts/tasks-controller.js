@@ -14,9 +14,7 @@ tasksController = function() {
 		$(taskPage).find('form').fromObject({}); 
 	}
 	
-	function taskCountRow() {
-				$("#taskCount").text(storageEngine.countTasks);
-	}
+	
 	// #3 - Destacar tarefas que passaram do deadline. Percorremos cada linha da tabela atribuindo seu valor a varial 'row'
     //			Nesta linha (row) recolhemos a data realizando uma conversao para o tipo Date.
     //			Por fim comparamos: se data da tarefa for igual a hoje. Adicionamos a classe 'overdue' para alertar.
@@ -64,11 +62,13 @@ tasksController = function() {
 				}
 
 				// storage engine continua sendo a interface de acesso aos dados
-				storageEngine.init(function() {
-					storageEngine.initObjectStore('task', function() {
-						callback();
-					}, errorLogger) 
-				}, errorLogger);
+				storageEngine.init( function() { tasksController.loadTasks(); }, errorLogger );
+
+				// storageEngine.init(function() {
+				// 	storageEngine.initObjectStore('task', function() {
+				// 		callback();
+				// 	}, errorLogger) 
+				// }, errorLogger);
 				
 				$(taskPage).find('[required="required"]').prev('label').append( '<span>*</span>').children( 'span').addClass('required');
 				$(taskPage).find('tbody tr:even').addClass( 'even');
@@ -82,10 +82,16 @@ tasksController = function() {
 					$(evt.target).closest('td').siblings().andSelf().toggleClass('rowHighlight');
 				});
 
-				
+				// CLEAR TASK - limpar o form de nova tarefa
 				$(taskPage).find('#clearTask').click(function(evt) {
 					evt.preventDefault();
 					clearTaskForm(); 
+				});
+
+				// HIDE TASK - Ocultar form de nova tarefa
+				$(taskPage).find('#hideTask').click(function(evt) {
+					evt.preventDefault();
+					$(taskPage).find('#taskCreation').addClass('not');
 				});
 				
 				// DELETE TASK
@@ -144,24 +150,30 @@ tasksController = function() {
 			}
 		},
 
+		 taskCountRow : function() {
+			storageEngine.countTasks(function(data){
+				$('#taskCount').text(data.count);
+			}, errorLogger);
+		},
+
 		// #5 - implementada ordenacao das tarefas. Ao pesquisar comparamos as datas ordenando pela menor
 		loadTasks : function() {
-			// storageEngine.findAll('task', function(tasks) {
-			// 	tasks.sort(function(d1,d2){
-			// 		return Date.parse(d1.requiredBy).compareTo(Date.parse(d2.requiredBy));
-			// 	});
+			storageEngine.findAll('task', function(tasks) {
+				tasks.sort(function(d1,d2){
+					return Date.parse(d1.requiredBy).compareTo(Date.parse(d2.requiredBy));
+				});
 
-			// 	$.each(tasks, function(index, task) {
-			// 		if(!task.complete){
-			// 			task.complete = false;
-			// 		}
-			// 		$('#taskRow').tmpl(task).appendTo($(taskPage).find('#tblTasks tbody'));
+				$.each(tasks, function(index, task) {
+					if(!task.complete){
+						task.complete = false;
+					}
+					$('#taskRow').tmpl(task).appendTo($(taskPage).find('#tblTasks tbody'));
 			
-			// 	});
+				});
 			// taskCountRow();
 			// tasksMakeColor();
 			
-			// }, errorLogger);
+			}, errorLogger);
 		}
 	} 
 }();

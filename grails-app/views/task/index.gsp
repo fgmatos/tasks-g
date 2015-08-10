@@ -72,10 +72,11 @@
 
 				</div>
 	                        <!-- <input type="hidden" name="id"> -->
-				<nav>
+				<nav id="nav-task">
 					<!-- <g:remoteLink action="save" update="result">Salvar Tarefa</g:remoteLink> -->
 					<a href="#" id="saveTask">Salvar tarefa</a>	
 					<a href="#" id="clearTask">Limpar tarefas</a>
+					<a href="#" id="hideTask">Ocultar</a>
 				</nav>
 			</form>
 
