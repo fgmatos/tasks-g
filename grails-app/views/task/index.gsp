@@ -1,5 +1,6 @@
 
 <%@ page import="com.app.Task" %>
+<%@ page import="com.app.Category" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -98,7 +99,7 @@
 
 						<th><g:message code="task.categoria.label" default="Categoria" /></th>
 					
-						<!-- <g:sortableColumn property="completada" title="${message(code: 'task.completada.label', default: 'Completada')}" />  -->
+						<!-- <g:sortableColumn property="complete" title="${message(code: 'task.complete.label', default: 'complete')}" />  -->
 
 						<th><g:message code="default.taskpage.actions.label"  /></th>
 						
@@ -120,7 +121,7 @@
 
 						<td><g:link action="show" id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "categoria.nome")}</g:link></td>
 					
-						<!-- <td><g:formatBoolean boolean="${taskInstance.completada}" /></td> -->
+						<!-- <td><g:formatBoolean boolean="${taskInstance.complete}" /></td> -->
 
 						<!-- <td>
 							<div class="nav buttons">
@@ -179,30 +180,48 @@
 
 			<div class="pagination">
 				<g:paginate total="${taskInstanceCount ?: 0}" />
-				<span id="taskCount">0</span>
+				
+				<footer>
+					Você tem <span id="taskCount">0</span> tarefa(s) pendente(s)
+				</footer>
+				
 			</div>
 		</div>
 
 		<script>
-		$(document).ready(function() {
+			$(document).ready(function() {		
+				// Descricao da funcao: (ex.)
+				// 		tasksController.init( element, dataEngine, function loadTasks )
+				//			params: 
+				//				Element, => Informa o elemento HTML utilizado pelo TASKSCONTROLLER 
+				//				dataEngine => Informa qual lib de armazenamento de dados será utilizada. (disponível 'indexeddb' e 'webstorage'. Valor default é "webstorage")
+				
+				tasksController.init($('#taskPage'), "ajaxDB", function() {
+					// tasksController.loadTasks();
+				});	
 
-			// #6 - Implementada engine IndexedDB para salvar os dados. Existe a opção de vc escolher uma das API's ao charmar o
-			//		tasksController.init, ou se não informado, será utilizada a API webstorage por padrão por ser suportada
-			// 		por mais browsers que as demais.
-		
-			// Descricao da funcao: (ex.)
-			// 		tasksController.init( element, dataEngine, function loadTasks )
-			//			params: 
-			//				Element, => Informa o elemento HTML utilizado pelo TASKSCONTROLLER 
-			//				dataEngine => Informa qual lib de armazenamento de dados será utilizada. (disponível 'indexeddb' e 'webstorage'. Valor default é "webstorage")
-			
-			tasksController.init($('body'), "ajaxDB", function() {
-				// tasksController.loadTasks();
-			});		
-		});
+				// if (jQuery.support.ajax) {
+				//     alert("Ajax is supported!");
+				// }	
+			});
+		</script>
 
-
-</script>
+		<script id="taskRow" type="text/x-jQuery-tmpl">
+			<tr>
+				<td {{if complete == true}}class="taskCompleted"{{/if}}>${task}</td>
+				<td {{if complete == true}}class="taskCompleted"{{/if}}><time datetime="${requiredBy}"> ${requiredBy}</time></td>
+				<td {{if complete == true}}class="taskCompleted"{{/if}}>${category}</td>
+				<td>
+					<nav>
+						{{if complete != true}}
+							<a href="#" class="editRow" data-task-id="${id}">Editar</a>
+							<a href="#" class="completeRow" data-task-id="${id}">Completar</a>
+						{{/if}}
+						<a href="#" class="deleteRow" data-task-id="${id}">Deletar</a>
+					</nav>
+				</td>
+			</tr>
+		</script>
 
 
 	</body>
