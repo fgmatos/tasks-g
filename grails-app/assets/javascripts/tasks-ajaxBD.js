@@ -11,9 +11,6 @@ storageEngine = function() {
 			} else {
 				errorCallback('ajax_api_not_supported', 'The ajax api is not supported');
 			}
-
-			// initialized = true;
-			// successCallback(null);
 		},
 		save : function(type, obj, successCallback, errorCallback) {
 			console.log(obj);
