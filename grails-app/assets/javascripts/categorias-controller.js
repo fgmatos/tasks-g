@@ -1,7 +1,7 @@
 if ($(location).attr('hostname') == "localhost"){
 	window.urlPath = "http://" + $(location).attr('host') + "/tasks/";
 } else {
-	window.urlPath = "http://" + $(location).attr('host') + "/tasks/";
+	window.urlPath = "http://" + $(location).attr('host') + "/";
 }
 
 categoriasController = function() {
